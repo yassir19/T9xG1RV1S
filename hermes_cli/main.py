@@ -4271,11 +4271,11 @@ def _build_web_ui(web_dir: Path, *, fatal: bool = False) -> bool:
             print("Web UI frontend not built and npm is not available.")
             print("Install Node.js, then run:  cd web && npm install && npm run build")
         return not fatal
-    print("→ Building web UI...")
+    print("-> Building web UI...")
     r1 = subprocess.run([npm, "install", "--silent"], cwd=web_dir, capture_output=True)
     if r1.returncode != 0:
         print(
-            f"  {'✗' if fatal else '⚠'} Web UI npm install failed"
+            f"  {'X' if fatal else '!'} Web UI npm install failed"
             + ("" if fatal else " (hermes web will not be available)")
         )
         if fatal:
@@ -4284,13 +4284,13 @@ def _build_web_ui(web_dir: Path, *, fatal: bool = False) -> bool:
     r2 = subprocess.run([npm, "run", "build"], cwd=web_dir, capture_output=True)
     if r2.returncode != 0:
         print(
-            f"  {'✗' if fatal else '⚠'} Web UI build failed"
+            f"  {'X' if fatal else '!'} Web UI build failed"
             + ("" if fatal else " (hermes web will not be available)")
         )
         if fatal:
             print("  Run manually:  cd web && npm install && npm run build")
         return False
-    print("  ✓ Web UI built")
+    print("  [OK] Web UI built")
     return True
 
 

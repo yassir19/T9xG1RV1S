@@ -1239,9 +1239,10 @@ def _get_provider_chain() -> List[tuple]:
     Built at call time (not module level) so that test patches
     on the ``_try_*`` functions are picked up correctly.
     """
+    # NOTE: openrouter and nous are skipped — Zscaler blocks their hosts.
+    # Remaining: local/custom (Ollama, llama.cpp, vLLM, LM Studio) and
+    # api-key providers (ollama-cloud, minimax, etc.) via OLLAMA_BASE_URL.
     return [
-        ("openrouter", _try_openrouter),
-        ("nous", _try_nous),
         ("local/custom", _try_custom_endpoint),
         ("openai-codex", _try_codex),
         ("api-key", _resolve_api_key_provider),
