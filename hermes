@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""
+Hermes Agent CLI launcher.
+
+This wrapper should behave like the installed `hermes` command, including
+subcommands such as `gateway`, `cron`, and `doctor`.
+
+FIX: Sets required env vars before launching to route through Ollama Cloud
+and avoid Zscaler blocking OpenRouter.
+"""
+
+import os
+import sys
+
+# Fix: ensure Ollama Cloud is used, OpenRouter is blocked by Zscaler
+# Force override whatever is set in the parent environment
+os.environ["OLLAMA_BASE_URL"] = "http://localhost:11434/v1"
+os.environ["OLLAMA_API_KEY"] = "ollama"
+# Zscaler blocks openrouter.ai — override existing key with empty string
+# so _try_openrouter() returns None and chain falls through to ollama-cloud
+os.environ["OPENROUTER_API_KEY"] = ""
+
+# Also clear SSL_CERT_FILE to avoid broken certifi in hermes venv
+# (httpx patch handles fallback to verify=False)
+os.environ.pop("SSL_CERT_FILE", None)
+os.environ.pop("REQUESTS_CA_BUNDLE", None)
+
+# On Windows, ensure we use the venv python if available
+if sys.platform == "win32" and "hermes-agent" in sys.executable:
+    pass  # already in venv
+
+if __name__ == "__main__":
+    from hermes_cli.main import main
+    main()
